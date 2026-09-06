@@ -2,21 +2,11 @@
 
 Terraform infrastructure for deploying a self-hosted [Linkding](https://github.com/sissbruecker/linkding) bookmark manager on AWS. The project provisions an EC2 instance and its network resources, publishes the application through Route 53, and bootstraps a Docker Compose stack with Nginx and Let's Encrypt TLS.
 
-![AWS infrastructure diagram](single-vpc-diagram.png)
-
 ## Architecture
 
-```mermaid
-flowchart TD
-    User[Browser] --> DNS[Route 53 hosted zone]
-    DNS --> EIP[Elastic IP]
-    EIP --> SG[Security group]
-    SG --> EC2[Ubuntu EC2 instance]
-    EC2 --> Nginx[Nginx container]
-    Nginx --> Linkding[Linkding container]
-    Linkding --> Data[Persistent data on EC2 root volume]
-    Certbot[Certbot on EC2] --> Nginx
-```
+![Single-VPC AWS architecture showing the internet gateway, public subnet, security group, and EC2 instance](single-vpc-diagram.png)
+
+The diagram reflects the network provisioned by this project: a `10.0.0.0/16` VPC containing a `10.0.1.0/24` public subnet in one availability zone. An internet gateway provides public connectivity, while the EC2 instance is placed inside a security group in the public subnet.
 
 Terraform creates:
 
