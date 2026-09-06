@@ -1,0 +1,31 @@
+services:
+  linkding:
+    image: sissbruecker/linkding:latest
+    restart: unless-stopped
+    init: true
+    expose:
+      - "9090"
+    volumes:
+      - /opt/linkding/data:/etc/linkding/data
+    networks:
+      - web
+
+  nginx:
+    image: nginx:stable-alpine
+    restart: unless-stopped
+    init: true
+    depends_on:
+      - linkding
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /opt/linkding/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - /opt/linkding/certbot/www:/var/www/certbot:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    networks:
+      - web
+
+networks:
+  web:
+    driver: bridge
